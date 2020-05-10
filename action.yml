@@ -4,16 +4,13 @@ inputs:
   repo-token:
     description: 'Use {{ secrets.GITHUB_TOKEN }} to access the githubs api'
     required: true
-  max:
+  repo-limit:
     description: 'Maximum number of pull requests'
     required: true
-  max-per-author:
+  per-author-limit:
     description: 'Maximum number of pull requests per author'
     required: false
     default: 2
-outputs:
-  message:
-    description: 'A message explaining why a pull request was denied'
 runs:
   using: 'node12'
   main: 'dist/index.js'
