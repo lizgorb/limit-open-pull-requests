@@ -1,6 +1,9 @@
 name: 'Limit Open Pull Requests'
 description: 'A github action that enforces a limit on the number of open pull requests in a repo. Once the limit is reached any new pull requests will be automatically closed.'
 inputs:
+  repo-token:
+    description: 'Use {{ secrets.GITHUB_TOKEN }} to access the githubs api'
+    required: true
   max:
     description: 'Maximum number of pull requests'
     required: true
