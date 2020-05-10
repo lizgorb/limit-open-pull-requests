@@ -1,0 +1,16 @@
+name: 'Limit Open Pull Requests'
+description: 'A github action that enforces a limit on the number of open pull requests in a repo. Once the limit is reached any new pull requests will be automatically closed.'
+inputs:
+  max:
+    description: 'Maximum number of pull requests'
+    required: true
+  max-per-author:
+    description: 'Maximum number of pull requests per author'
+    required: false
+    default: 2
+outputs:
+  message:
+    description: 'A message explaining why a pull request was denied'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

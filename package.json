@@ -1,0 +1,28 @@
+{
+  "name": "pull-request-cop",
+  "version": "1.0.0",
+  "description": "A github action to enforce a max number of pull request in a repo",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lizgorb/pull-request-cop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lizgorb/pull-request-cop/issues"
+  },
+  "homepage": "https://github.com/lizgorb/pull-request-cop#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^2.2.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.22.1"
+  }
+}
