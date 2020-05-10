@@ -1,9 +1,8 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 
 try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = "you" //core.getInput('who-to-greet');
+  const nameToGreet = "you?" //core.getInput('who-to-greet');
   const maxPRs =  core.getInput('max');
   console.log(`Hello ${nameToGreet}!`);
   console.log(`You'd like a ${maxPRs} limit!`);

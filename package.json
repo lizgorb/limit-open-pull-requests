@@ -23,6 +23,7 @@
     "@actions/github": "^2.2.0"
   },
   "devDependencies": {
-    "@zeit/ncc": "^0.22.1"
+    "@zeit/ncc": "^0.22.1",
+    "typescript": "^3.8.3"
   }
 }

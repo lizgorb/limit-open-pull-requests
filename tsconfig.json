@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "module": "commonjs",
+    "target": "es5",
+    "removeComments": true,
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
