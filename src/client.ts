@@ -33,7 +33,14 @@ export class Client {
     return this.openPRs
   }
 
-  async closePullRequest(pullrequest: PullRequest): Promise<void>{
+  async closePullRequest(pullrequest: PullRequest, comment: string): Promise<void>{
+    await this.client.issues.createComment({
+      issue_number: pullrequest.number,
+      owner: this.repoOwner,
+      repo: this.repoName,
+      body: comment
+    });
+
     await this.client.pulls.update({
       pull_number: pullrequest.number,
       owner: this.repoOwner,
