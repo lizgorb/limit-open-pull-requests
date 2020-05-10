@@ -2020,10 +2020,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var PullRequestState;
 (function (PullRequestState) {
     PullRequestState["Open"] = "open";
+    PullRequestState["Closed"] = "closed";
 })(PullRequestState = exports.PullRequestState || (exports.PullRequestState = {}));
 var PullRequest = (function () {
     function PullRequest(pullRequestItem) {
         this.id = pullRequestItem.id;
+        this.number = pullRequestItem.number;
         this.author = pullRequestItem.user.login;
         this.draft = pullRequestItem.draft;
         this.headRef = pullRequestItem.head.ref;
@@ -4207,29 +4209,38 @@ var client_1 = __webpack_require__(976);
 var event_1 = __webpack_require__(352);
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var payload, nameToGreet, maxPRs, repoToken, _a, owner, repo, client, openPrs, error_1;
+        var repoToken, _a, owner, repo, client, openPRs, repoLimit, perAuthorLimit, pullRequestNumber_1, triggeringPR_1, openPRsForAuthor, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    if (github.context.eventName !== event_1.Event.PullRequest) {
+                    if (github.context.eventName !== event_1.Event.PullRequest && github.context.payload.pull_request) {
                         core.setFailed("This action can only be used with pull request events");
                         return [2];
                     }
-                    payload = JSON.stringify(github.context.payload, undefined, 2);
-                    console.log("The event payload: " + payload);
-                    nameToGreet = "you??";
-                    maxPRs = core.getInput('max');
                     repoToken = core.getInput('repo-token');
-                    console.log("Hello " + nameToGreet);
-                    console.log("You'd like a " + maxPRs + " limit!");
                     _a = github.context.repo, owner = _a.owner, repo = _a.repo;
                     client = new client_1.Client(repoToken, owner, repo);
                     return [4, client.getOpenPullRequests()];
                 case 1:
-                    openPrs = _b.sent();
-                    console.log(openPrs);
-                    core.setOutput("message", "lets see if this can happen");
+                    openPRs = _b.sent();
+                    core.info(JSON.stringify(openPRs));
+                    repoLimit = Number(core.getInput('repo-limit'));
+                    perAuthorLimit = Number(core.getInput('per-author-limit'));
+                    core.info("Using the following limits: at most " + repoLimit + " open PRs, at most " + perAuthorLimit + " open PRs per author.");
+                    pullRequestNumber_1 = github.context.payload.pull_request.number;
+                    triggeringPR_1 = openPRs.find(function (pr) { return pr.number === pullRequestNumber_1; });
+                    if (triggeringPR_1) {
+                        openPRsForAuthor = openPRs.filter(function (pr) { return pr.author === triggeringPR_1.author; });
+                        core.info("Current open PRs in the repos is " + openPRs.length);
+                        core.info("Current open PRs for " + triggeringPR_1.author + " is " + openPRsForAuthor.length);
+                        if (openPRs.length > repoLimit || openPRsForAuthor.length > perAuthorLimit) {
+                            client.closePullRequest(triggeringPR_1);
+                        }
+                    }
+                    else {
+                        core.info("This action was triggered by a closed pull request. No action will be taken.");
+                    }
                     return [3, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -25520,14 +25531,14 @@ var Client = (function () {
         this.client = new github.GitHub(repoToken);
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.openPRs = new Array();
     }
     Client.prototype.getOpenPullRequests = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var pullRequests, reviewrequest, result, openPullRequests, _i, openPullRequests_1, prItem, pr;
+            var reviewrequest, result, openPullRequests, _i, openPullRequests_1, prItem, pr;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        pullRequests = new Array();
                         reviewrequest = this.client.pulls.list({
                             owner: this.repoOwner,
                             repo: this.repoName,
@@ -25540,9 +25551,26 @@ var Client = (function () {
                         for (_i = 0, openPullRequests_1 = openPullRequests; _i < openPullRequests_1.length; _i++) {
                             prItem = openPullRequests_1[_i];
                             pr = new pullRequest_1.PullRequest(prItem);
-                            pullRequests.push(pr);
+                            this.openPRs.push(pr);
                         }
-                        return [2, pullRequests];
+                        return [2, this.openPRs];
+                }
+            });
+        });
+    };
+    Client.prototype.closePullRequest = function (pullrequest) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.client.pulls.update({
+                            pull_number: pullrequest.number,
+                            owner: this.repoOwner,
+                            repo: this.repoName,
+                            state: pullRequest_1.PullRequestState.Closed
+                        })];
+                    case 1:
+                        _a.sent();
+                        return [2];
                 }
             });
         });
