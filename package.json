@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/lizgorb/pull-request-cop#readme",
   "overrides": {
-    "undici": "^6.24.0"
+    "undici": "^6.29.1"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
